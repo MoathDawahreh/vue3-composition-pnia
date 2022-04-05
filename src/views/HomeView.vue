@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h3 class="counterTitle">{{ counterData.counterTitle }}</h3>
-    <div class="home">
+    <div class="home" ref="appTittleRef" >
       <button class="btn" @click="incerment($event)">+</button>
       <span class="counter">
         {{ counterData.count }}
@@ -18,13 +18,20 @@
 
 <script setup lang="ts">
 import { isInDestructureAssignment, walkBlockDeclarations } from "@vue/compiler-core";
-import { ref, onMounted, reactive, computed, watch, onBeforeMount } from "vue";
+import { ref, onMounted, reactive, computed, watch, onBeforeMount,nextTick } from "vue";
 
 // const count = ref(5),counterTitle = ref('Counter');
 const appTitle = " Yo!";
 const counterData = reactive({
   count: 0,
   counterTitle: "Counter",
+});
+
+const appTittleRef = ref()
+
+onMounted(() => {
+  console.log(appTittleRef.value.offsetWidth);
+ 
 });
 
 watch(
@@ -39,9 +46,19 @@ const oddOrEven = computed(() => {
   return counterData.count % 2 === 0 ? "even" : "odd";
 });
 
-const incerment = (e: Event): void => {
+const incerment = async (e: Event): void => {
   //  console.log(e)
   counterData.count++;
+    // we can catch the moment when Vue updates DOM using Vue.nextTick() this is useful because A change
+    // to Vue component's data (props or state) isn't immediately reflected in the DOM. Rather, Vue updates DOM asynchronously.
+    //after the dom is updated .. let's do this:
+  await nextTick();
+  console.log('the dom is updated now');
+  // nextTick(() => {
+
+  //   // after the dom is updated .. let's do this:
+  //   console.log(appTittleRef.value.offsetWidth);
+  // });
 };
 const decrement = (): void => {
   counterData.count--;
